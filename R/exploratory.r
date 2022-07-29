@@ -29,11 +29,13 @@ plot_state <- function(state, save = TRUE){
     state_df <- df %>% filter(STATE_NAME == state)
     if(save == TRUE){
         png(paste0("outputs/imgs/rates_",state,".png"))
+        plot(state_df["suicide_rate"])
+        title(state)
+        dev.off()
     }
-    plot(state_df["suicide_rate"])
-    title(paste("Suicide Rate,", state))
-    dev.off()
+    return(plot(state_df["suicide_rate"]))
 }
+
 
 # Some state plots
 plot_state("California")
@@ -47,3 +49,22 @@ plot_state("Florida")
 
 # issues with GDAL version
 # ggplot() + geom_sf(data = county) + theme_bw()
+
+
+
+### Computing Moran's I
+
+county_lw <- readRDS("data/processed/county_weight_list.rds")
+mt <- spdep::moran.test(df_nona$suicide_rate, county_lw)
+
+### Moran's I test results:
+# Moran I test under randomisation
+
+# data:  df_nona$suicide_rate  
+# weights: count_lw    
+
+# Moran I statistic standard deviate = 1804.3, p-value < 2.2e-16
+# alternative hypothesis: greater
+# sample estimates:
+# Moran I statistic       Expectation          Variance 
+#      8.500109e-01     -3.065726e-06      2.219363e-07 

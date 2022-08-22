@@ -6,7 +6,11 @@ library(CARBayesST)
 
 
 DATE <- Sys.Date()
-OUT_PATH <- paste0("outputs/model_results/model_", DATE,".rds")
+OUT_PATH <- paste0(
+    "outputs/model_results/model_",
+    DATE,
+    ".rds"
+)
 
 ## 1. Loading dataset and geometries ###
 vars <- read_csv("data/processed/combined.csv")
@@ -51,10 +55,12 @@ vars_to_remove <- c(
 )
 
 model_formula <- as.formula(
-    paste("deaths ~ offset(log(pop)) +", paste(
+    paste("deaths ~ offset(log(pop)) +",
+       paste(
         setdiff(colnames(df_nona), vars_to_remove),
-        collapse= "+")
-         )
+        collapse= "+"
+       )
+    )
 )
 
 model <- ST.CARar(
@@ -67,7 +73,7 @@ model <- ST.CARar(
     n.sample=50000
 )
 
-# saveRDS(model, OUT_PATH)
+saveRDS(model, OUT_PATH)
 
 # for prediction: set the outcome variable to NAN (deaths)
 # for these NAN values we get the posterior distributions via

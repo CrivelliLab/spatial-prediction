@@ -31,13 +31,14 @@ fips_to_keep <- df_nona %>%
     pull(FIPSCODE)
 
 
+counties_keep <- county %>%
+    filter(FIPSCODE %in% fips_to_keep)
 #length(fips_to_keep)
 #1931
 
+
 ### Method 1: Binary Matrix ###
 
-counties_keep <- county %>%
-    filter(FIPSCODE %in% fips_to_keep)
 
 county_nb <- spdep::poly2nb(
     st_geometry(counties_keep)
@@ -66,18 +67,25 @@ county_nn <- knn2nb(
     )
 )
 
-neighbours_matrix <- spdep::nb2mat(
-    county_nn,
-    style="W",
-    zero.policy=TRUE
-)
+
 # do to imprecisions, matrix is not symmetric as it should be.
 # Note: this is a reason why binary matrix is preferable.
-neighbours_matrix[
-    lower.tri(neighbours_matrix)
-] = t(neighbours_matrix)[
-    lower.tri(neighbours_matrix)
-]
 
+county_nn.sym <- make.sym.nb(county_nn)
+
+neighbours_matrix <- spdep::nb2mat(
+    county_nn.sym,
+    style="W"
+)
+# due to numerical inconsitencies original matrix is not symmetric even if neighbours list is symmetric. 
+# Therefore, force symmetric.
+# Again, this should not be necessary with Binary matrix.
+
+neighbours_matrix <- as.matrix(Matrix::forceSymmetric(neighbours_matrix))
+
+# checks
+# sum(rowSums(neighbours_matrix)) # should be same as fips_to_keep
+# min(rowSums(neighbours_matrix)) # should be 1
+# max(rowSums(neighbours_matrix)) # should be 1
 
 

@@ -48,7 +48,7 @@ plot_state("Florida")
 
 
 # issues with GDAL version
-# ggplot() + geom_sf(data = county) + theme_bw()
+# ggplot(data=df_nona) + geom_sf(fill=suicide_rate) + theme_bw()
 
 
 

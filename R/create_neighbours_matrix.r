@@ -2,13 +2,6 @@ setwd("/global/u2/b/bbrusco/spatial-prediction")
 library(tidyverse)
 library(sf)
 
-## Loading dataset and geometries ###
-vars <- read_csv("data/processed/combined.csv")
-county <- read_sf(
-    dsn = "data/shapefile/cb_2020_us_tract_500k",
-    layer = "cb_2020_us_tract_500k"
-) 
-
 # Note: United States total includes 3,006 counties;
 ## Loading dataset and geometries ###
 vars <- read_csv("data/processed/combined.csv")
@@ -78,6 +71,13 @@ neighbours_matrix <- spdep::nb2mat(
     style="W",
     zero.policy=TRUE
 )
+# do to imprecisions, matrix is not symmetric as it should be.
+# Note: this is a reason why binary matrix is preferable.
+neighbours_matrix[
+    lower.tri(neighbours_matrix)
+] = t(neighbours_matrix)[
+    lower.tri(neighbours_matrix)
+]
 
 
 

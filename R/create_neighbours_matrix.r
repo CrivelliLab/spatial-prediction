@@ -2,6 +2,8 @@ setwd("/global/u2/b/bbrusco/spatial-prediction")
 library(tidyverse)
 library(sf)
 
+METHOD <- "knn"
+
 # Note: United States total includes 3,006 counties;
 ## Loading dataset and geometries ###
 vars <- read_csv("data/processed/combined.csv")
@@ -39,50 +41,64 @@ counties_keep <- county %>%
 
 ### Method 1: Binary Matrix ###
 
+if(METHOD=="binary"){
+    county_nb <- spdep::poly2nb(
+        st_geometry(counties_keep)
+    )
 
-county_nb <- spdep::poly2nb(
-    st_geometry(counties_keep)
-)
+    county_lw <- spdep::nb2listw(
+        county_nb, style="B", zero.policy=TRUE
+    )
 
-county_lw <- spdep::nb2listw(
-    county_nb, style="B", zero.policy=TRUE
-)
-
-neighbours_matrix <- spdep::nb2mat(
-    county_nb,
-    style="B",
-    zero.policy=TRUE
-)
+    neighbours_matrix <- spdep::nb2mat(
+        county_nb,
+        style="B",
+        zero.policy=TRUE
+    )
+}
 
 ### Or: Method 2: Nearest Neighbour (to use if we don't have a full counties dataset) ###
-
-county_nn <- knn2nb(
-    knearneigh(
-        st_centroid(
-            st_geometry(
-                counties_keep),
-            of_largest_polygon=TRUE
-        ),
-        k=1
+else if(METHOD=="knn"){
+    county_nn <- knn2nb(
+        knearneigh(
+            st_centroid(
+                st_geometry(
+                    counties_keep),
+                of_largest_polygon=TRUE
+            ),
+            k=1
+        )
     )
+
+
+    # do to imprecisions, matrix is not symmetric as it should be.
+    # Note: this is a reason why binary matrix is preferable.
+
+    county_nn.sym <- make.sym.nb(county_nn)
+
+    neighbours_matrix <- spdep::nb2mat(
+        county_nn.sym,
+        style="W"
+    )
+    # due to numerical inconsitencies original matrix is not symmetric even if neighbours list is symmetric. 
+    # Therefore, force symmetric.
+    # Again, this should not be necessary with Binary matrix.
+
+    neighbours_matrix <- as.matrix(Matrix::forceSymmetric(neighbours_matrix))
+
+
+}
+
+else{
+    "METHOD must be `knn` or `binary`"
+}
+
+# save matrix.
+saveRDS(
+    neighbours_matrix,
+    file = "data/processed/neighbours_matrix.rds"
 )
-
-
-# do to imprecisions, matrix is not symmetric as it should be.
-# Note: this is a reason why binary matrix is preferable.
-
-county_nn.sym <- make.sym.nb(county_nn)
-
-neighbours_matrix <- spdep::nb2mat(
-    county_nn.sym,
-    style="W"
-)
-# due to numerical inconsitencies original matrix is not symmetric even if neighbours list is symmetric. 
-# Therefore, force symmetric.
-# Again, this should not be necessary with Binary matrix.
-
-neighbours_matrix <- as.matrix(Matrix::forceSymmetric(neighbours_matrix))
-
+    
 # checks
 # sum(rowSums(neighbours_matrix)) # should be same as fips_to_keep
 # min(rowSums(neighbours_matrix)) # should be 1

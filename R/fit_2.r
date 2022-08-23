@@ -2,17 +2,17 @@ setwd("/global/u2/b/bbrusco/spatial-prediction")
 library(tidyverse)
 library(sf)
 library(spdep)
-library(CARBayesST)
-library(caret)
+library(CARBayes)
+
 
 DATE <- Sys.Date()
 OUT_PATH <- paste0(
-    "outputs/model_results/model_",
+    "outputs/model_results/fixedtime_model_",
     DATE,
     ".rds"
 )
 
-## 1. Loading dataset and geometries ###
+## 1. Loading dataset and geometriecorr_mat = cor(design_matrix)
 vars <- read_csv("data/processed/combined.csv")
 
 county <- read_sf(
@@ -46,14 +46,12 @@ neighbours_matrix <- readRDS(
     file = "data/processed/neighbours_matrix.rds"
 )
 
-
-
 vars_to_remove <- c(
     "STATEFP", "COUNTYFP", "TRACTCE", "AFFGEOID",
     "GEOID", "NAME", "NAMELSAD", "STUSPS", "NAMELSADCO",
     "STATE_NAME", "LSAD", "geometry", "FIPSCODE", "county",
-    "crude_rate", "adj_rate","suicide_rate","year"
-) 
+    "crude_rate", "adj_rate","suicide_rate"
+) # leave year as a covariate
 
 
 corr_mat = df_nona %>%
@@ -69,6 +67,7 @@ design_matrix <- df_nona %>%
     dplyr::select(-all_of(vars_to_remove)) %>%
     dplyr::select(-all_of(hc))
 
+
 predictors  <- setdiff(colnames(df_nona), c(vars_to_remove,hc_names))
 
 model_formula <- as.formula(
@@ -81,11 +80,10 @@ model_formula <- as.formula(
 )
 
 
-model <- ST.CARar(
+model <- S.CARbym(
     model_formula,
-    df_nona,
+    data=design_matrix,
     family="poisson",
-    AR=1,
     W=neighbours_matrix,
     burnin=10000,
     n.sample=50000

@@ -1,12 +1,17 @@
 setwd("/global/u2/b/bbrusco/spatial-prediction")
 library(tidyverse)
 library(sf)
+library(spdep)
 
 METHOD <- "knn"
 
 # Note: United States total includes 3,006 counties;
 ## Loading dataset and geometries ###
 vars <- read_csv("data/processed/combined.csv")
+# change this to the number of years that 
+# you are considering in your dataset.
+NUMBER_OF_YEARS <- length(unique(vars$year))
+
 
 county <- read_sf(
     dsn = "data/shapefile/cb_2020_us_tract_500k",
@@ -24,7 +29,7 @@ df_nona <- df %>% na.omit(suicide_rate) %>%
   group_by(FIPSCODE) %>% 
   mutate(name_count = n()) %>%
   ungroup() %>% 
-  filter(name_count == 4) %>% 
+  filter(name_count == NUMBER_OF_YEARS) %>% 
   dplyr::select(-name_count) %>%
   arrange(desc(year), FIPSCODE)
 
@@ -55,10 +60,10 @@ if(METHOD=="binary"){
         style="B",
         zero.policy=TRUE
     )
-}
+} else if(METHOD=="knn"){
 
-### Or: Method 2: Nearest Neighbour (to use if we don't have a full counties dataset) ###
-else if(METHOD=="knn"){
+    ### Or: Method 2: Nearest Neighbour (to use if we don't have a full counties dataset) ###
+    
     county_nn <- knn2nb(
         knearneigh(
             st_centroid(
@@ -87,9 +92,7 @@ else if(METHOD=="knn"){
     neighbours_matrix <- as.matrix(Matrix::forceSymmetric(neighbours_matrix))
 
 
-}
-
-else{
+} else {
     "METHOD must be `knn` or `binary`"
 }
 

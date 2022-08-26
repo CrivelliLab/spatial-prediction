@@ -3,10 +3,10 @@
 #SBATCH -N 1
 #SBATCH -C knl
 #SBATCH --qos=regular
-#SBATCH -J spatial_bayesian_prediction
+#SBATCH -J fit1
 #SBATCH --mail-user=bbrusco@lbl.gov
 #SBATCH --mail-type=ALL
-#SBATCH -t 01:30:00
+#SBATCH -t 24:30:00
 
 #OpenMP settings:
 export OMP_NUM_THREADS=1

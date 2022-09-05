@@ -1,3 +1,5 @@
+"Create neighbours matrix - either K-Neareast Neighbour or Binary"
+
 setwd("/global/u2/b/bbrusco/spatial-prediction")
 library(tidyverse)
 library(sf)

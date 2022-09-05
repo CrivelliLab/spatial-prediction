@@ -1,3 +1,5 @@
+"Model with spatial and random effects"
+
 setwd("/global/u2/b/bbrusco/spatial-prediction")
 library(tidyverse)
 library(sf)

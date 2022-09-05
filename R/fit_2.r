@@ -2,7 +2,7 @@ setwd("/global/u2/b/bbrusco/spatial-prediction")
 library(tidyverse)
 library(sf)
 library(spdep)
-library(CARBayes)
+library(CARBayesST)
 
 
 DATE <- Sys.Date()
@@ -14,6 +14,8 @@ OUT_PATH <- paste0(
 
 ## 1. Loading dataset and geometriecorr_mat = cor(design_matrix)
 vars <- read_csv("data/processed/combined.csv")
+# you are considering in your dataset.
+NUMBER_OF_YEARS <- length(unique(vars$year))
 
 county <- read_sf(
     dsn = "data/shapefile/cb_2020_us_tract_500k",
@@ -30,12 +32,11 @@ df_nona <- df %>% na.omit(suicide_rate) %>%
   group_by(FIPSCODE) %>% 
   mutate(name_count = n()) %>%
   ungroup() %>% 
-  filter(name_count == 4) %>% 
+  filter(name_count == NUMBER_OF_YEARS) %>% 
   dplyr::select(-name_count) %>%
   arrange(desc(year), FIPSCODE) %>% as_tibble()
 
 #length(fips_to_keep)
-#1931
 
 ## 2. Creating the neighbours matrix. See file create_neighbours_matrix.R ###
 
@@ -49,19 +50,14 @@ neighbours_matrix <- readRDS(
 vars_to_remove <- c(
     "STATEFP", "COUNTYFP", "TRACTCE", "AFFGEOID",
     "GEOID", "NAME", "NAMELSAD", "STUSPS", "NAMELSADCO",
-    "STATE_NAME", "LSAD", "geometry", "FIPSCODE", "county",
-    "crude_rate", "adj_rate","suicide_rate"
-) # leave year as a covariate
-
-
+    "STATE_NAME", "LSAD", "geometry", "FIPSCODE", "county", "year", "deaths","pop"
+) # year incorporated by the ST.CARlinear model
 corr_mat = df_nona %>%
     dplyr::select(-all_of(vars_to_remove)) %>% cor()
 
 hc = caret::findCorrelation(corr_mat, cutoff=0.99) 
 hc = sort(hc)
-# ACS_PCT_RENTED_HH	ACS_PCT_TRICARE_VA	ACS_TOTAL_HOUSEHOLD
-hc_names <- c("ACS_PCT_RENTED_HH", "ACS_PCT_TRICARE_VA", "ACS_TOTAL_HOUSEHOLD")
-
+hc_names <- colnames(corr_mat[hc,hc])[-1]
 
 design_matrix <- df_nona %>%
     dplyr::select(-all_of(vars_to_remove)) %>%
@@ -79,17 +75,17 @@ model_formula <- as.formula(
     )
 )
 
-
-model <- S.CARbym(
+model <- ST.CARlinear(
     model_formula,
-    data=design_matrix,
+    data=df_nona,
     family="poisson",
     W=neighbours_matrix,
     burnin=10000,
-    n.sample=50000
+    n.sample=80000
 )
 
 saveRDS(model, OUT_PATH)
+
 
 # for prediction: set the outcome variable to NAN (deaths)
 # for these NAN values we get the posterior distributions via

@@ -41,7 +41,7 @@ fips_to_keep <- df_nona %>%
 counties_keep <- county %>%
     filter(FIPSCODE %in% fips_to_keep)
 #length(fips_to_keep)
-#1931
+#3029
 
 
 ### Method 1: Binary Matrix ###
@@ -103,8 +103,8 @@ saveRDS(
 )
     
 # checks
-# sum(rowSums(neighbours_matrix)) # should be same as fips_to_keep
-# min(rowSums(neighbours_matrix)) # should be 1
+#sum(rowSums(neighbours_matrix)) # should be same as fips_to_keep
+#min(rowSums(neighbours_matrix)) # should be 1
 # max(rowSums(neighbours_matrix)) # should be 1
 
 

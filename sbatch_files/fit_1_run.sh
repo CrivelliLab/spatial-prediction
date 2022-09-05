@@ -6,12 +6,7 @@
 #SBATCH -J fit1
 #SBATCH --mail-user=bbrusco@lbl.gov
 #SBATCH --mail-type=ALL
-#SBATCH -t 24:30:00
-
-#OpenMP settings:
-export OMP_NUM_THREADS=1
-export OMP_PLACES=threads
-export OMP_PROC_BIND=true
+#SBATCH -t 18:30:00
 
 module load R
 cd /global/u2/b/bbrusco/spatial-prediction

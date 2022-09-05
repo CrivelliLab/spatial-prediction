@@ -34,7 +34,7 @@ df_nona <- df %>% na.omit(suicide_rate) %>%
   ungroup() %>% 
   filter(name_count == NUMBER_OF_YEARS) %>% 
   dplyr::select(-name_count) %>%
-  arrange(desc(year), FIPSCODE) %>% as_tibble()
+  arrange(desc(year), FIPSCODE) %>% as_tibble() 
 
 #length(fips_to_keep)
 #1931
@@ -53,7 +53,7 @@ vars_to_remove <- c(
     "STATEFP", "COUNTYFP", "TRACTCE", "AFFGEOID",
     "GEOID", "NAME", "NAMELSAD", "STUSPS", "NAMELSADCO",
     "STATE_NAME", "LSAD", "geometry", "FIPSCODE", "county",
-    "suicide_rate","year"
+    "year","deaths","pop"
 )
 
 
@@ -66,18 +66,15 @@ vars_to_remove <- c(
 # ) 
 
 
+#df_nona[df_nona$year == 2018, "deaths"] = NA
+
 corr_mat = df_nona %>%
-    dplyr::select(-all_of(vars_to_remove)) %>% cor()
+    dplyr::select(-all_of(c(vars_to_remove))) %>% cor()
 
 hc = caret::findCorrelation(corr_mat, cutoff=0.99) 
 hc = sort(hc)
 # ACS_PCT_RENTED_HH	ACS_PCT_TRICARE_VA	ACS_TOTAL_HOUSEHOLD
 hc_names <- colnames(corr_mat[hc,hc])[-1]
-
-
-design_matrix <- df_nona %>%
-    dplyr::select(-all_of(vars_to_remove)) %>%
-    dplyr::select(-all_of(hc))
 
 predictors  <- setdiff(colnames(df_nona), c(vars_to_remove,hc_names))
 
@@ -98,7 +95,7 @@ model <- ST.CARar(
     AR=1,
     W=neighbours_matrix,
     burnin=10000,
-    n.sample=50000
+    n.sample=80000
 )
 
 saveRDS(model, OUT_PATH)

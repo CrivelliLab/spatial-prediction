@@ -9,6 +9,6 @@
 #SBATCH -t 18:30:00
 
 module load R
-cd /global/u2/b/bbrusco/spatial-prediction
+cd /global/project/projectdirs/m1532/Projects_MVP/geospatial/GeoSpatial_Model/spatial-prediction
 source activate r-venv
 R CMD BATCH R/fit_1.r

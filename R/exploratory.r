@@ -1,4 +1,4 @@
-setwd("/global/u2/b/bbrusco/spatial-prediction")
+setwd("/global/project/projectdirs/m1532/Projects_MVP/geospatial/GeoSpatial_Model/spatial-prediction")
 library(tidyverse)
 library(sf)
 

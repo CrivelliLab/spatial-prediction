@@ -8,7 +8,7 @@ The models fitted here use mainly two data files:
   Folder path:
   
   ```
-  ~/bbrusco/spatial-prediction/data/raw/sdoh/
+  ~/global/project/projectdirs/m1532/Projects_MVP/geospatial/GeoSpatial_Model/spatial-prediction/data/raw/sdoh/
   ```
   
   The predictors of interest selected via Hierarchical Clustering (features of highest importance).
@@ -18,7 +18,7 @@ The models fitted here use mainly two data files:
   Folder path:
   
   ```
-  ~/bbrusco/spatial-prediction/data/raw/suicide/
+  ~/global/project/projectdirs/m1532/Projects_MVP/geospatial/GeoSpatial_Model/spatial-prediction/data/raw/suicide/
   ```
   
 These files are combined (using the code in `R/0_merge_data.r`) and the resulting dataset is saved in `~/bbrusco/spatial-prediction/data/processed/combined.csv`
@@ -28,18 +28,17 @@ Other files needed to run the model:
 
   
  * Census demographic information (in particular, county population) 
- 
-  File path:
+   File path:
   
-  ```
-  ~/bbrusco/spatial-prediction/data/raw/demo/2020-demographic-info.csv
-  ```
+    ```
+    ~/global/project/projectdirs/m1532/Projects_MVP/geospatial/GeoSpatial_Model/spatial-prediction/data/raw/demo/2020-demographic-info.csv
+    ```
   
  * Spatial information (shapefiles):
 
-  ```
-  ~/bbrusco/spatial-prediction/data/shapefile
-  ```
+    ```
+    ~/global/project/projectdirs/m1532/Projects_MVP/geospatial/GeoSpatial_Model//spatial-prediction/data/shapefile
+    ```
 
 
 Note:

@@ -52,6 +52,7 @@ neighbours_matrix <- readRDS(
 vars_to_remove <- c(
     "STATEFP", "COUNTYFP", "TRACTCE", "AFFGEOID",
     "GEOID", "NAME", "NAMELSAD", "STUSPS", "NAMELSADCO",
+    "ALAND", "AWATER",
     "STATE_NAME", "LSAD", "geometry", "FIPSCODE", "county", "year", "deaths","pop"
 ) # year incorporated by the ST.CARlinear model
 corr_mat = df_nona %>%

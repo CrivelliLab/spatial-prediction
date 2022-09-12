@@ -55,7 +55,7 @@ vars_to_remove <- c(
     "STATEFP", "COUNTYFP", "TRACTCE", "AFFGEOID",
     "GEOID", "NAME", "NAMELSAD", "STUSPS", "NAMELSADCO",
     "STATE_NAME", "LSAD", "geometry", "FIPSCODE", "county",
-    "year","deaths","pop"
+    "year","deaths","pop", "ALAND", "AWATER"
 )
 
 

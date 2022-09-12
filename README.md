@@ -1,5 +1,9 @@
 # spatial-prediction
 
+For details on the data used, the models fit, and description of the model outputs, see the `.\docs\` folder.
+
+**Goal**: Based on historical data on suicide deaths and covariates representing social determinants of health, we want to predict counties with high suicide risk.
+
 
 ### Creating the Virtual Environment
 
@@ -15,8 +19,8 @@ The two packages used for Bayesian Hierarchical Models with Temporal and Spatial
 
 ```
 nersc$ R
-> install.packages("CARBayes", lib='~/.R/srclib/r-venv')
 > install.packages("CARBayesST", lib='~/.R/srclib/r-venv')
+> install.packages("CARBayes", lib='~/.R/srclib/r-venv')
 # Optional, for rendering.
 > install.packages("geojsonio", lib='~/.R/srclib/r-venv')
 ```
@@ -24,28 +28,30 @@ nersc$ R
 
 ### Fitting the models
 
-1. Create the full dataset needed (R/0_merge_data.r) 
+1. Create the full dataset needed (`R/0_merge_data.r`) 
     This file can be used to merge the datasets with the social determinants of health variables and the dataset with the suicide death count by county (joined using FIPS code).
 
 
-2. Create neighbours matrix as outlined in (R/create_neighbours_matrix.R)
+2. Create neighbours matrix as outlined in (`R/create_neighbours_matrix.R`)
     
     
     
 3. Model fit :
 
-* R/fit_1.r (random temporal effects and random spatial effects)
+* `R/fit_1.r` (random temporal effects and random spatial effects)
 
 To run the model: 
 
 ```
-sbatch_files/fit_1_run.sh to run a slurm job for the models
+nersc$ sbatch sbatch_files/fit_1_run.sh 
 ```
 
-* R/fit_2.r (linear -fixed effects time (year) and random spatial effects)
+to run a slurm job for the models
+
+* `R/fit_2.r` (linear -fixed effects time (year) and random spatial effects)
 
 To run the model: 
 
 ```
-sbatch_files/fit_2_run.sh to run a slurm job for the models
+nersc$ sbatch_files/fit_2_run.sh
 ```

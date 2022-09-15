@@ -46,11 +46,24 @@ To run the model:
 nersc$ sbatch sbatch_files/fit_1_run.sh 
 ```
 
-to run a slurm job for the models
+to run a slurm job for the models.
+
+Similarly for Model 2
 
 * `R/fit_2.r` (linear -fixed effects time (year) and random spatial effects)
 
-To run the model: 
+To run the model : 
+
+```
+nersc$ sbatch_files/fit_2_run.sh
+```
+
+And for model 3
+
+
+* `R/fit_3.r` (random spatial and temporal effects, AR2)
+
+To run the model : 
 
 ```
 nersc$ sbatch_files/fit_2_run.sh
